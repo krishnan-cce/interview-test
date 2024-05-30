@@ -50,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -73,6 +74,7 @@ fun UsersScreen() {
 
     val (nameFocusRequester, emailFocusRequester) = remember { FocusRequester.createRefs() }
     val snackBarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val lazyListState = rememberLazyListState()
 
@@ -84,22 +86,18 @@ fun UsersScreen() {
         }
     }
 
-    val isKeyboardOpen = remember { mutableStateOf(false) }
-    val keyboardHiddenEvent = remember { mutableStateOf(false) }
 
     LaunchedEffect(lazyListState.firstVisibleItemIndex) {
-        if (lazyListState.firstVisibleItemIndex > 0 && !isKeyboardOpen.value) {
+        if (lazyListState.firstVisibleItemIndex > 0 ) {
             keyboardController?.hide()
-            isKeyboardOpen.value = true
-            keyboardHiddenEvent.value = !keyboardHiddenEvent.value
-        } else if (lazyListState.firstVisibleItemIndex == 0) {
-            isKeyboardOpen.value = false
+            focusManager.clearFocus()
+
         }
     }
 
 
 
-    key(users.hashCode(), keyboardHiddenEvent.value) {
+//    key(users.hashCode()) {
 
         Scaffold(
             topBar = { UsersScreenAppbar() },
@@ -225,7 +223,7 @@ fun UsersScreen() {
                     )
                 }
             }
-        }
+//        }
     }
 }
 
